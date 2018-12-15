@@ -9,8 +9,23 @@ load('models/explore-effects.Rdata')
 load('data/interim/correctness.RData')
 source('src/features/engineer-features.R')
 
+between_vec <- Vectorize(dplyr::between)
+
+# correctness %>% engineer_features()
 
 # Baseline Hazard ---------------------------------------------------------
+
+# tol <- 100
+# 
+# correctness %>% 
+#   engineer_features() %>% 
+#   filter(
+#     abs(treatmentHazardRatio - 0.5) < (tol * 0.5),
+#     abs(expectedLifetimes - 0.5) < (tol * 0.5),
+#     abs(pctOpenEnrollmentPeriods - 0.5) < (tol * 0.5),
+#     abs(cohortSize - 8) < (tol * 8)
+#   )
+
 
 plotdat <- expand.grid(
   baselineHazardRate=seq(0.0001, 0.05, 0.0001),
@@ -19,7 +34,7 @@ plotdat <- expand.grid(
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=8
 ) %>% 
-  engineer_features() %>% 
+  calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
@@ -83,7 +98,7 @@ plotdat <- expand.grid(
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=8
 ) %>% 
-  engineer_features() %>% 
+  calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
@@ -146,7 +161,7 @@ plotdat <- expand.grid(
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=8
 ) %>% 
-  engineer_features() %>% 
+  calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
@@ -209,7 +224,7 @@ plotdat <- expand.grid(
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=seq(32)
 ) %>% 
-  engineer_features() %>% 
+  calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
@@ -271,7 +286,7 @@ plotdat <- expand.grid(
   pctOpenEnrollmentPeriods=seq(0.001, 1, 0.001),
   cohortSize=16
 ) %>% 
-  engineer_features() %>% 
+  calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
@@ -323,13 +338,4 @@ ggsave(
   height = 300,
   scale = 0.4
 )
-
-
-
-
-
-
-
-
-
 

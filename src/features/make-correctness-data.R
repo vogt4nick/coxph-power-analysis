@@ -21,10 +21,7 @@ correctness <- coxph_simulations %>%
   tidyr::spread(isCorrect, count, fill=0) %>% 
   mutate(
     power = correct / (correct + notCorrect)
-  ) %>% 
-  group_by(correct) %>%
-  sample_n(10, replace=TRUE) %>%
-  ungroup()
+  ) 
 
   
 save(correctness, file = 'data/interim/correctness.RData')

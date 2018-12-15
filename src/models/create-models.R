@@ -57,4 +57,25 @@ log_effects <-
     data = logit_dat, 
     family = binomial(link = "logit"))
 
+
 save(linear_effects, quadratic_effects, cubic_effects, log_effects, file = 'models/explore-effects.Rdata')
+
+
+# mixed effects -----------------------------------------------------------
+
+mixed_effects <- glm(
+  formula = isCorrect ~ 
+    logBaselineHazardRate +
+    logTreatmentHazardRatio + 
+    cohortSize +
+    logExpectedLifetimes + 
+    pctOpenEnrollmentPeriods + pctOpenEnrollmentPeriods2, 
+  data = logit_dat, 
+  family = binomial(link = "logit"))
+
+AIC(linear_effects)
+AIC(quadratic_effects)
+AIC(cubic_effects)
+AIC(log_effects)
+AIC(mixed_effects)
+

@@ -8,6 +8,11 @@ between_vec <- Vectorize(dplyr::between)
 load('data/interim/coxph_simulations.RData')
 load('data/interim/correctness.RData')
 
+correctness <- correctness %>% 
+  group_by(correct) %>%
+  sample_n(5, replace=FALSE) %>%
+  ungroup()
+
 
 logit_dat <- coxph_simulations %>%
   drop_na() %>%
@@ -44,6 +49,6 @@ logit_dat <- coxph_simulations %>%
     # maxCohorts,
     # randomState
   ) %>% 
-  engineer_features()
+  calculate_model_params()
 
 save(logit_dat, file = 'data/processed/logit_dat.Rdata')

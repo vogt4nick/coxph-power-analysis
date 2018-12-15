@@ -1,11 +1,18 @@
+
 engineer_features <- function(dat) {
   dat %>% 
     mutate(
-      # ePeriodsBaseline = log(0.5) / log(1 - baselineHazardRate),
-      # expectedLifetimes = (maxPeriods / ePeriodsBaseline),
-      # nClosedEnrollmentPeriods = maxPeriods - maxCohorts,
-      # nOpenEnrollmentPeriods = maxPeriods - nClosedEnrollmentPeriods,
-      # pctOpenEnrollmentPeriods = nOpenEnrollmentPeriods / maxPeriods,
+      ePeriodsBaseline = log(0.5) / log(1 - baselineHazardRate),
+      expectedLifetimes = (maxPeriods / ePeriodsBaseline),
+      nClosedEnrollmentPeriods = maxPeriods - maxCohorts,
+      nOpenEnrollmentPeriods = maxPeriods - nClosedEnrollmentPeriods,
+      pctOpenEnrollmentPeriods = nOpenEnrollmentPeriods / maxPeriods
+    )
+}
+
+calculate_model_params <- function(dat) {
+  dat %>% 
+    mutate(
       baselineHazardRate2 = baselineHazardRate ** 2,
       baselineHazardRate3 = baselineHazardRate ** 3,
       logBaselineHazardRate = log(baselineHazardRate),
