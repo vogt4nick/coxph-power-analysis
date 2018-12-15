@@ -51,7 +51,7 @@ engineer_features <- function(dat) {
 # Baseline Hazard ---------------------------------------------------------
 
 plotdat <- expand.grid(
-  baselineHazardRate=seq(0.001, 0.1, 0.001),
+  baselineHazardRate=seq(0.0001, 0.05, 0.0001),
   treatmentHazardRatio=0.5,
   expectedLifetimes=0.5,
   pctOpenEnrollmentPeriods=0.5,
@@ -77,25 +77,27 @@ gg <- ggplot(plotdat) +
   geom_line(aes(baselineHazardRate, y = modelPrediction, group=model, color=model), size=1) +
   theme_minimal() + 
   theme(
-    legend.position="top",
-    legend.background = element_rect(
-      size=0.5, 
-      linetype="solid", 
-      colour ="black"
-    )
+    legend.position="top"
+    # legend.background = element_rect(
+    #   size=0.5, 
+    #   linetype="solid", 
+    #   colour ="black"
+    # )
   ) +
   scale_color_discrete(name="Model") +
   scale_x_continuous(
     labels = scales::percent,
-    breaks = seq(0, .1, .02),
-    minor_breaks = seq(0 , .1, .01)) +
+    breaks = seq(0, .1, .01),
+    minor_breaks = seq(0 , .1, .005)) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
     minor_breaks = seq(0 , 1, .1)) +
   labs(
     x = 'Baseline Hazard Rate',
-    y = 'Predicted Power'
+    y = 'Predicted Power',
+    title = 'Effect of Baseline Hazard Rate on Predicted Power',
+    caption = "Evaluated at Treatment HR = 0.5; Expected Lifetimes = 0.5; % Open Enrollment = 50%; Cohort Size = 8"
   )
 
 ggsave(
