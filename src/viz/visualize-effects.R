@@ -127,7 +127,7 @@ ggsave(
 plotdat <- expand.grid(
   baselineHazardRate=0.05,
   treatmentHazardRatio=seq(0.0001, 0.9999, 0.0001),
-  expectedLifetimes=2,
+  expectedLifetimes=1,
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=8
 ) %>% 
@@ -172,7 +172,7 @@ gg <- ggplot(plotdat) +
     x = 'Treatment Hazard Ratio',
     y = 'Predicted Power',
     title = 'Effect of Treatment Effect Size on Predicted Power',
-    caption = "Evaluated at Basline Hazard = 0.05; Expected Lifetimes = 0.5; % Open Enrollment = 50%; Cohort Size = 8"
+    caption = "Evaluated at Basline Hazard = 0.05; Expected Lifetimes = 1; % Open Enrollment = 50%; Cohort Size = 8"
   )
 
 ggsave(
@@ -188,7 +188,7 @@ ggsave(
 # Expected Lifetimes ------------------------------------------------------
 
 plotdat <- expand.grid(
-  baselineHazardRate=0.5,
+  baselineHazardRate=0.05,
   treatmentHazardRatio=0.5,
   expectedLifetimes=seq(0, 3, 0.001),
   pctOpenEnrollmentPeriods=0.5,
@@ -298,7 +298,7 @@ gg <- ggplot(plotdat) +
     x = 'Cohort Size',
     y = 'Predicted Power',
     title = 'Effect of Cohort Size on Predicted Power',
-    caption = "Evaluated at Baseline Hazard = 0.05; Treatment HR = 0.5; Expected Lifetimes = 1; % Open Enrollment = 50%"
+    caption = "Evaluated at Baseline Hazard = 0.05; Treatment HR = 0.5; Expected Lifetimes = 0.5; % Open Enrollment = 50%"
   )
 
 ggsave(
