@@ -2,10 +2,11 @@
 
 library(tidyverse)
 
-
-load('./data/interim/coxph_simulations.RData')
-load('./data/interim/correctness.RData')
+source('src/features/engineer-features.R')
 between_vec <- Vectorize(dplyr::between)
+
+load('data/interim/coxph_simulations.RData')
+load('data/interim/correctness.RData')
 
 
 logit_dat <- coxph_simulations %>%
@@ -38,10 +39,11 @@ logit_dat <- coxph_simulations %>%
     pctOpenEnrollmentPeriods,
     cohortSize,
     baselineHazardRate,
-    treatmentHazardRatio,
-    maxPeriods,
-    maxCohorts,
-    randomState
-  )
+    treatmentHazardRatio
+    # maxPeriods,
+    # maxCohorts,
+    # randomState
+  ) %>% 
+  engineer_features()
 
 save(logit_dat, file = 'data/processed/logit_dat.Rdata')
