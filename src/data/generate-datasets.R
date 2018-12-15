@@ -8,8 +8,8 @@ logit_inv <- function(x) {
 x <- c(4, 8, 16, 32)
 
 coxph_simulations <- slim_simulations(
-  bhrs = logit_inv(seq(-5, -1)),
-  thrs = logit_inv(seq(-5, 0)),
+  bhrs = logit_inv(seq(-5, -0)),
+  thrs = logit_inv(seq(-4, 4)),
   mps  = x,
   mcs  = x,
   css  = x,

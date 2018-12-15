@@ -102,7 +102,8 @@ gg <- ggplot(plotdat) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
-    minor_breaks = seq(0 , 1, .1)) +
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
   labs(
     x = 'Baseline Hazard Rate',
     y = 'Predicted Power',
@@ -125,8 +126,8 @@ ggsave(
 
 plotdat <- expand.grid(
   baselineHazardRate=0.05,
-  treatmentHazardRatio=seq(0.0001, 0.5, 0.0001),
-  expectedLifetimes=0.5,
+  treatmentHazardRatio=seq(0.0001, 0.9999, 0.0001),
+  expectedLifetimes=2,
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=8
 ) %>% 
@@ -165,7 +166,8 @@ gg <- ggplot(plotdat) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
-    minor_breaks = seq(0 , 1, .1)) +
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
   labs(
     x = 'Treatment Hazard Ratio',
     y = 'Predicted Power',
@@ -227,7 +229,8 @@ gg <- ggplot(plotdat) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
-    minor_breaks = seq(0 , 1, .1)) +
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
   labs(
     x = 'Expected Lifetimes',
     y = 'Predicted Power',
@@ -250,7 +253,7 @@ ggsave(
 plotdat <- expand.grid(
   baselineHazardRate=0.05,
   treatmentHazardRatio=0.5,
-  expectedLifetimes=1,
+  expectedLifetimes=0.5,
   pctOpenEnrollmentPeriods=0.5,
   cohortSize=seq(32)
 ) %>% 
@@ -289,7 +292,8 @@ gg <- ggplot(plotdat) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
-    minor_breaks = seq(0 , 1, .1)) +
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
   labs(
     x = 'Cohort Size',
     y = 'Predicted Power',
@@ -350,7 +354,8 @@ gg <- ggplot(plotdat) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),
-    minor_breaks = seq(0 , 1, .1)) +
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
   labs(
     x = '% Open Enrollment Periods',
     y = 'Predicted Power',

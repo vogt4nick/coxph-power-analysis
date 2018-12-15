@@ -41,17 +41,16 @@ slim_simulations <- function(
     random_state=rss
   ) %>% 
     filter(max_cohorts <= max_periods) %>% 
-    # filter(log(0.5) / log(1-baseline_hazard_rate) <= max_periods) %>% 
+    filter(log(0.5) / log(1-baseline_hazard_rate) <= max_periods) %>%
     filter(max_periods <= 3 * log(0.5) / log(1-baseline_hazard_rate)) %>% 
-    as_data_frame()
+    as_data_frame() 
+  
+  all_params$simulation_id <- seq(nrow(all_params))
   
   # Progress bar & stats
   message("Simulating ", nrow(all_params), " datasets...", "\n----|----|----|----|----|")
   pb <- utils::txtProgressBar(min=1, max=nrow(all_params), width=25)
-  
-  
-  all_params$simulation_id <- seq(nrow(all_params))
-  
+
   results <- list()
   for (i in seq(nrow(all_params))) {
     utils::setTxtProgressBar(pb, i)
