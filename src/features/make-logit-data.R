@@ -1,4 +1,5 @@
 
+
 library(tidyverse)
 
 
@@ -7,12 +8,40 @@ load('./data/interim/correctness.RData')
 between_vec <- Vectorize(dplyr::between)
 
 
-logit_dat <- coxph_simulations %>% 
-  drop_na() %>% 
-  arrange(simulationId) %>% 
+logit_dat <- coxph_simulations %>%
+  drop_na() %>%
+  arrange(simulationId) %>%
   inner_join(
     correctness,
-    by = c("baselineHazardRate", "treatmentHazardRatio", "maxPeriods", "maxCohorts", "cohortSize")
+    by = c(
+      "baselineHazardRate",
+      "treatmentHazardRatio",
+      "maxPeriods",
+      "maxCohorts",
+      "cohortSize"
+    )
+  ) %>%
+  mutate(
+    ePeriodsBaseline = log(0.5) / log(1 - baselineHazardRate),
+    expectedLifetimes = (maxPeriods / ePeriodsBaseline),
+    nClosedEnrollmentPeriods = maxPeriods - maxCohorts,
+    nOpenEnrollmentPeriods = maxPeriods - nClosedEnrollmentPeriods,
+    pctOpenEnrollmentPeriods = nOpenEnrollmentPeriods / maxPeriods,
+    lConfInt = exp(logHr - qnorm(0.975) * logSe),
+    uConfInt = exp(logHr + qnorm(0.975) * logSe),
+    rejectH0 = !between_vec(1, lConfInt, uConfInt),
+    isCorrect = rejectH0 & uConfInt < 1
+  ) %>%
+  select(
+    isCorrect,
+    expectedLifetimes,
+    pctOpenEnrollmentPeriods,
+    cohortSize,
+    baselineHazardRate,
+    treatmentHazardRatio,
+    maxPeriods,
+    maxCohorts,
+    randomState
   )
 
-save(logit_dat, file='data/processed/logit_dat.Rdata')
+save(logit_dat, file = 'data/processed/logit_dat.Rdata')
