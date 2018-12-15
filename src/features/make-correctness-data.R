@@ -5,7 +5,7 @@ load('./data/interim/coxph_simulations.RData')
 between_vec <- Vectorize(dplyr::between)
 
 
-coxph_simulations %>% 
+correctness <- coxph_simulations %>% 
   filter(!is.na(p)) %>%
   mutate(
     ePeriodsBaseline = log(0.5) / log(1-baselineHazardRate),
@@ -21,7 +21,10 @@ coxph_simulations %>%
   tidyr::spread(isCorrect, count, fill=0) %>% 
   mutate(
     power = correct / (correct + notCorrect)
-  ) %>% 
+  ) 
   group_by(correct) %>%
-  sample_n(5, replace=TRUE) %>%
+  sample_n(10, replace=TRUE) %>%
   ungroup()
+
+  
+save(correctness, file = 'data/interim/correctness.RData')
