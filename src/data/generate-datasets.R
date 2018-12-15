@@ -13,7 +13,7 @@ coxph_simulations <- slim_simulations(
   mps  = x,
   mcs  = x,
   css  = x,
-  rss  = seq(20)
+  rss  = seq(50)
 )
 
 save(coxph_simulations, file = 'data/interim/coxph_simulations.Rdata')
