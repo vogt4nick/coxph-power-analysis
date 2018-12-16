@@ -32,10 +32,11 @@ gg <- ggplot(correctness) +
     breaks = seq(0, 1, .1),
     minor_breaks = seq(0, 1, .05)
   ) +
-  scale_y_continuous(
-    breaks = seq(0, 100, 20),
-    minor_breaks = seq(0, 100, 10)
-  ) +
+  # scale_y_continuous(
+  #   breaks = seq(0, 100, 20),
+  #   minor_breaks = seq(0, 100, 10),
+  #   limits = c(0, 100)
+  # ) +
   theme_minimal() +
   labs(
     x = 'Observed Power',

@@ -46,11 +46,11 @@ cubic_effects <-
 
 # log effects -------------------------------------------------------------
 
-log_effects <- 
+diminishing_effects <- 
   glm(
     formula = isCorrect ~ 
-      logBaselineHazardRate +
-      logTreatmentHazardRatio + 
+      exp(baselineHazardRate) +
+      exp(treatmentHazardRatio) + 
       logCohortSize +
       logExpectedLifetimes + 
       logPctOpenEnrollmentPeriods, 
@@ -58,7 +58,7 @@ log_effects <-
     family = binomial(link = "logit"))
 
 
-save(linear_effects, quadratic_effects, cubic_effects, log_effects, file = 'models/explore-effects.Rdata')
+save(linear_effects, quadratic_effects, cubic_effects, diminishing_effects, file = 'models/explore-effects.Rdata')
 
 
 # mixed effects -----------------------------------------------------------
@@ -76,6 +76,6 @@ mixed_effects <- glm(
 AIC(linear_effects)
 AIC(quadratic_effects)
 AIC(cubic_effects)
-AIC(log_effects)
+AIC(diminishing_effects)
 AIC(mixed_effects)
 

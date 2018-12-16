@@ -26,7 +26,6 @@ between_vec <- Vectorize(dplyr::between)
 #     abs(cohortSize - 8) < (tol * 8)
 #   )
 
-
 plotdat <- expand.grid(
   baselineHazardRate=seq(0.0001, 0.05, 0.0001),
   treatmentHazardRatio=0.5,
@@ -39,14 +38,14 @@ plotdat <- expand.grid(
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
     Cubic = predict.glm(cubic_effects, newdata=., type='response'),
-    Log = predict.glm(log_effects, newdata=., type='response')
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response')
   ) %>% 
-  select(baselineHazardRate, Linear, Quadratic, Cubic, Log) %>% 
+  select(baselineHazardRate, Linear, Quadratic, Cubic, Diminishing) %>% 
   gather(
-    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Log
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing
   ) %>% 
   mutate(
-    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Log'))
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing'))
   )
 
 
@@ -103,14 +102,14 @@ plotdat <- expand.grid(
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
     Cubic = predict.glm(cubic_effects, newdata=., type='response'),
-    Log = predict.glm(log_effects, newdata=., type='response')
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response')
   ) %>% 
-  select(treatmentHazardRatio, Linear, Quadratic, Cubic, Log) %>% 
+  select(treatmentHazardRatio, Linear, Quadratic, Cubic, Diminishing) %>% 
   gather(
-    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Log
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing
   ) %>% 
   mutate(
-    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Log'))
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing'))
   )
 
 
@@ -166,14 +165,14 @@ plotdat <- expand.grid(
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
     Cubic = predict.glm(cubic_effects, newdata=., type='response'),
-    Log = predict.glm(log_effects, newdata=., type='response')
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response')
   ) %>% 
-  select(expectedLifetimes, Linear, Quadratic, Cubic, Log) %>% 
+  select(expectedLifetimes, Linear, Quadratic, Cubic, Diminishing) %>% 
   gather(
-    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Log
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing
   ) %>% 
   mutate(
-    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Log'))
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing'))
   )
 
 
@@ -229,14 +228,14 @@ plotdat <- expand.grid(
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
     Cubic = predict.glm(cubic_effects, newdata=., type='response'),
-    Log = predict.glm(log_effects, newdata=., type='response')
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response')
   ) %>% 
-  select(cohortSize, Linear, Quadratic, Cubic, Log) %>% 
+  select(cohortSize, Linear, Quadratic, Cubic, Diminishing) %>% 
   gather(
-    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Log
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing
   ) %>% 
   mutate(
-    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Log'))
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing'))
   )
 
 
@@ -291,14 +290,14 @@ plotdat <- expand.grid(
     Linear = predict.glm(linear_effects, newdata=., type='response'),
     Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
     Cubic = predict.glm(cubic_effects, newdata=., type='response'),
-    Log = predict.glm(log_effects, newdata=., type='response')
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response')
   ) %>% 
-  select(pctOpenEnrollmentPeriods, Linear, Quadratic, Cubic, Log) %>% 
+  select(pctOpenEnrollmentPeriods, Linear, Quadratic, Cubic, Diminishing) %>% 
   gather(
-    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Log
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing
   ) %>% 
   mutate(
-    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Log'))
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing'))
   )
 
 
