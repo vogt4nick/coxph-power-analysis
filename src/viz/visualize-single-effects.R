@@ -15,17 +15,6 @@ between_vec <- Vectorize(dplyr::between)
 
 # Baseline Hazard ---------------------------------------------------------
 
-# tol <- 100
-# 
-# correctness %>% 
-#   engineer_features() %>% 
-#   filter(
-#     abs(treatmentHazardRatio - 0.5) < (tol * 0.5),
-#     abs(expectedLifetimes - 0.5) < (tol * 0.5),
-#     abs(pctOpenEnrollmentPeriods - 0.5) < (tol * 0.5),
-#     abs(cohortSize - 8) < (tol * 8)
-#   )
-
 plotdat <- expand.grid(
   baselineHazardRate=seq(0.0001, 0.5, 0.0001),
   treatmentHazardRatio=0.5,
@@ -283,7 +272,7 @@ plotdat <- expand.grid(
   treatmentHazardRatio=0.5,
   expectedLifetimes=0.5,
   pctOpenEnrollmentPeriods=seq(0.001, 1, 0.001),
-  cohortSize=16
+  cohortSize=32
 ) %>% 
   calculate_model_params() %>% 
   mutate( # we're breaking camel-case convention b/c they'll be labels later
