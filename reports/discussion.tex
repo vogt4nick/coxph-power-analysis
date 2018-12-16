@@ -1,19 +1,14 @@
 \section{Discussion}
 
-There will be a lot to discuss when it's done. 
+We set out to understand how a scientist can ethically subset their dataset to maximize the stastical power of the Cox proportional hazards model. We designed our experiments to understand how different design elements affect a study's power. 
 
-I think this was useful to understand which predictors have the greatest effect on power, but I distrust the predictions because the dataset parameters covered only a small area of the total sample space.
+We uncovered three new findings:
+
+\begin{enumerate}
+    \item The final 20\% of cohorts present questionable value to the study, and acknowledge likely an interaction effect between study length and the number open enrollment periods on statistical power. 
+    \item The most effective means to increase power in small studies is to increase cohort size and study length. 
+\end{enumerate}
 
 \subsection{Next Steps}
 
-\begin{itemize}
-    \item Apply to Accelerated Failure Time model; compare results. 
-    \item Find better features.
-    \item Define the mathematics for power testing.
-    \item Our models were designed with inference, not prediction, in mind. How might a prediction model change things?
-\end{itemize}
-
-
-
-
-
+We present recommendations for future researchers interested in reproducing and expanding on our work. The most immediate improvements can be made by defining new features and fitting new models on these features. In the absence of a theoretically derived power calculation, a reliable predictive model may be employed with sufficient data and model design. Such a predictive model could inform scientists globally and reduce the cost of research. Finally, we'd like to see our findings applied to different survival models, such as the accelerated failure time model to compare and contrast results. 

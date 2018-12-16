@@ -26,7 +26,9 @@ The dataset simulations was programmed with R in RStudio \cite{R, rstudio}. The 
 
 The resulting dataset contains $n_c \times s$ observations on simulated individuals. The binomial treatment variable is evenly distributed across individuals such that $\frac{s}{2}$ are labeled "treated" and the remaining are labeled "untreated".
 
-We must classify when an individual died or if they are right-censored. Individual time of death is sampled from\footnotemark \cite{agresti:categorical}
+We must classify when an individual died or if they are right-censored. Individual time of death is sampled from\footnotemark 
+
+%\cite{agresti:categorical}
 
 \footnotetext{We define the hazard rate as $\lambda \cdot \exp[\beta x]$ to reflect Cox's proportional hazards assumption.}
 %
@@ -126,7 +128,7 @@ as the fraction of enrollment periods that accept new cohorts.
 
 \subsubsection{Correctness}
 
-We intend to use Logistic regression to identify which dataset parameters have the greatest effect on statistical power; which dataset parameters maximize the chance of a correct result. Before continuing further, we define what constitutes a "correct" result. Classically, our null hypothesis is
+We intend to use logistic regression to identify which dataset parameters have the greatest effect on statistical power; which dataset parameters maximize the chance of a correct result. Before continuing further, we define what constitutes a "correct" result. Classically, our null hypothesis is
 %
 \begin{equation}
     H_0 : \alpha = 0 

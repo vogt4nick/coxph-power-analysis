@@ -19,9 +19,9 @@ We verify that chose appropriate dataset parameters by observing the distributio
 
 \subsection{Logistic Models}
 
-In this section we interpret the predicted effects of four models. We briefly review the model results before discussing the effects of dataset parameters separately. The estimates for each model are summarized in Tables \ref{tbl:lin-quad-models} and \ref{tbl:log-model} \cite{stargazer}. 
+In this section we interpret the predicted effects of four models. We briefly review the model results before discussing the effects of dataset parameters separately. The estimates for each model are summarized in tables \ref{tbl:lin-quad-cubic} and \ref{tbl:dim}  \cite{stargazer}. 
 
-The linear-effects model (1) reinforces all our assumptions with no unexpected signs. Each dataset parameter has a large effect size and is significant at the $p < 0.01$ level. The quadratic-effects model (2) also fit as desired. Comparing their Akaike information criterion (AIC), the quadratic model appears to be a better specified model (their AICs are 2,534 and 2,180, respectively). 
+The linear-effects model reinforces all our assumptions with no unexpected signs. Each dataset parameter has a large effect size and is significant at the $p < 0.01$ level. The quadratic-effects model also fit as desired. Comparing their Akaike information criterion (AIC), the quadratic model appears to be a better specified model (their AICs are 2,659 and 2,574, respectively). 
 
 The cubic-effects model is suspicious. First, many of the values are not significant. This may be due to high multicollinearity between first-, second-, and third-order arguments. 
 
@@ -57,11 +57,8 @@ Expected lifetimes $(\nu)$ is the parameter indicating study-length. We're getti
 
 Power rapidly increases where $\nu < 2$ and slowly tapers off after $\nu = 2$. The effect is so pronounced that it seems reasonable to advise small studies observe at least 2 expected lifetimes before applying the Cox proportional hazards model --- when the constraint is possible. As figure (\ref{fig:power-expected-lifetimes-cohort-size}) shows, however, the effect is readily offset by the introduction of large cohorts. That is, short studies of several patients are more powerful than longer studies with few patients. 
 
-\subsubsection{Share of Enrollment Periods Open $(\omega)$}
+\subsubsection{Share of Open Enrollment Periods $(\omega)$}
 
-Finally, we arrive at the core question we set out to answer. How do we filter our dataset to maximize power?  Shockingly, not one model suggests an inversion point for valid values of $\omega$. This suggests that the marginal value of an additional 
+Finally, we arrive at the core question we set out to answer. How do we filter our dataset to maximize power? The quadratic- and diminishing-effects models disagree where $\omega > 0.8$ (Figure \ref{fig:power-pct-open-enrollment}). The former suggests including the last 20\% of cohorts cause the study to lose power power, whereas the latter suggests the same add power to the study. With these results, we believe the answer is unimportant; the effect of the last 20\% of cohorts is very small in either case. 
 
-
-\begin{itemize}
-    \item It's always better to add more cohorts (Figure \ref{fig:power-pct-open-enrollment}).
-\end{itemize}
+It's likely there is an interaction effect between $\nu$ and $\omega$. Naturally, a longer study should be able to include more cohorts. 
