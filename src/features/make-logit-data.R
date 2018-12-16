@@ -8,10 +8,11 @@ between_vec <- Vectorize(dplyr::between)
 load('data/interim/coxph_simulations.RData')
 load('data/interim/correctness.RData')
 
+set.seed(1)
 correctness <- correctness %>% 
   group_by(correct) %>%
   sample_n(5, replace=FALSE) %>%
-  ungroup()
+  ungroup() 
 
 
 logit_dat <- coxph_simulations %>%
