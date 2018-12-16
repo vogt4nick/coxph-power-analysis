@@ -78,7 +78,7 @@ gg <- ggplot(plotdat) +
   )
 
 ggsave(
-    filename = 'reports/figures/power-baseline-hazard.png',
+    filename = 'reports/figures/single-effects/power-baseline-hazard.png',
     plot = gg, 
     units = 'mm',
     width = 400,
@@ -142,7 +142,7 @@ gg <- ggplot(plotdat) +
   )
 
 ggsave(
-  filename = 'reports/figures/power-treatment-hr.png',
+  filename = 'reports/figures/single-effects/power-treatment-hr.png',
   plot = gg, 
   units = 'mm',
   width = 400,
@@ -205,7 +205,7 @@ gg <- ggplot(plotdat) +
   )
 
 ggsave(
-  filename = 'reports/figures/power-expected-lifetimes.png',
+  filename = 'reports/figures/single-effects/power-expected-lifetimes.png',
   plot = gg, 
   units = 'mm',
   width = 400,
@@ -268,7 +268,7 @@ gg <- ggplot(plotdat) +
   )
 
 ggsave(
-  filename = 'reports/figures/power-cohort-size.png',
+  filename = 'reports/figures/single-effects/power-cohort-size.png',
   plot = gg, 
   units = 'mm',
   width = 400,
@@ -330,7 +330,7 @@ gg <- ggplot(plotdat) +
   )
 
 ggsave(
-  filename = 'reports/figures/power-pct-open-enrollment.png',
+  filename = 'reports/figures/single-effects/power-pct-open-enrollment.png',
   plot = gg, 
   units = 'mm',
   width = 400,
