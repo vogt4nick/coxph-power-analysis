@@ -1,0 +1,242 @@
+\section{Methodology}
+\label{sec:methodology}
+
+We define and outline the methodology to estimate the power of given arguments to a Cox proportional hazards model. First, we define simulation parameters to construct the simulated datasets in R. We then analyze the resulting parameter estimates of the Cox proportional hazards model on each generated dataset. Simulation parameters that correctly identify a significant effect are labeled "correct" or "incorrect." We merge the original simulation parameters and the correctness of the Cox proportional hazards model, and evaluate logistic regression on the resulting dataset. The result of this logistic regression is our power estimate.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simulated Datasets
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Simulated Datasets}
+
+We construct a dataset from six parameters\footnotemark,
+
+\footnotetext{
+The dataset simulations was programmed with R in RStudio \cite{R, rstudio}. The source code can be found on the author's GitHub, vogt4nick/coxph-power-analysis \cite{github:vogt4nick}.
+}
+
+\begin{itemize}
+    \item baseline hazard rate ($\lambda$)
+    \item treatment hazard ratio ($\exp[\beta]$)
+    \item periods observed ($n_p$)
+    \item sequential cohorts observed ($n_c$)
+    \item cohort size ($s$)
+    \item random seed ($\xi$).
+\end{itemize}
+
+The resulting dataset contains $n_c \times s$ observations on simulated individuals. The binomial treatment variable is evenly distributed across individuals such that $\frac{s}{2}$ are labeled "treated" and the remaining are labeled "untreated".
+
+We must classify when an individual died or if they are right-censored. Individual time of death is sampled from\footnotemark \cite{agresti:categorical}
+
+\footnotetext{We define the hazard rate as $\lambda \cdot \exp[\beta x]$ to reflect Cox's proportional hazards assumption.}
+%
+\begin{equation}
+\label{eq:nbinom}
+NB(1, \lambda \cdot \exp[\beta x])
+\end{equation}
+%
+where
+%
+$$
+  x=\begin{cases}
+    1, & \text{if treated}\\
+    0, & \text{otherwise}
+  \end{cases}
+$$
+%
+The observation is right-censored where equation (\ref{eq:nbinom}) is greater than the max periods observed on that individual.
+
+By example, the parameters $\lambda=0.5, \beta=0.2, n_p=4, n_c=4, s=2$ may yield the dataset
+
+
+\pgfplotsset{compat=newest}
+\pgfplotstableread{
+ PeriodAdmitted IsTreated HazardRate IsDeceased LastObserved
+              1         0        0.5          1            1
+              1         1        0.1          0            4
+              2         0        0.5          1            3
+              2         1        0.1          1            4
+              3         0        0.5          1            3
+              3         1        0.1          0            4
+              4         0        0.5          1            4
+              4         1        0.1          0            4
+}\mytable
+\pgfplotstabletypeset[fixed, %number format
+%zerofill, %remove if you don't want integers having .0 suffix
+precision=1, %how many digits needed for decimal part
+dec sep align %align at the decimal point
+]{\mytable}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Choosing simulation parameters
+\subsubsection{Choosing simulation parameters}
+
+A common problem - and one we'll cross later - is how to determine which model to use. We find a rare reversal: How do we choose which datasets to use? More specifically, how do we choose which parameters to model? There are three primary concerns here.
+
+The first concern is to choose simulation parameters which will generate datasets with values such that the Cox proportional hazards model converges. The results are invalid otherwise. 
+
+The second concern is to choose simulation parameters which are reasonably well distributed in the logit space. Powers of 2 are a good candidate for this. Let $S = \lbrace 4, 8, ..., 32 \rbrace$ and set the simulation parameters for all combinations of
+
+\begin{itemize}
+    \item $\lambda \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -6, -5, -4, -3, -2, -1, 0 \rbrace \rbrace$,
+    \item $\beta \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -3, -2, -1, 0, 1, 2 \rbrace \rbrace$,
+    \item $n_p \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
+    \item $n_c \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
+    \item $s \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5 \rbrace \rbrace$,
+    \item $\xi \in \lbrace 1, 2, ..., 20 \rbrace$
+\end{itemize}
+
+The third and final concern is to choose simulation parameters that will create datasets whose observed power is not only 0 or 1. We view this as a sampling problem. We calculate the observed power $\hat \rho$ and sample five observations at each level in $(\frac{1}{20}, \frac{1}{20}, \frac{2}{20}, ..., \frac{20}{20})$. This methodology keeps balances the distribution of the target variable at the cost of reducing the size of the final dataset.
+
+\subsubsection{Cox Proportional Hazards Model}
+
+The Cox proportional hazards model is specified as 
+%
+\begin{equation}
+\label{eq:cox}
+    h(t) = \theta \exp \left[ \alpha x \right] + \varepsilon
+\end{equation}
+%
+The key to Cox's formulation, and hence the model's namesake, is the decision to model the hazard rate, $h(t)$, as the proportional effect of a treatment variable, $\alpha$, on the baseline hazard rate, $\theta$. The regression estimates $\theta$ and $\alpha$ correspond to the simulation parameters $\lambda$ and $\beta$ respectively. We later compare the estimates to the simulation parameters to determine the efficacy of the fitted model.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define Features
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Define Features}
+
+We identify three features to help fit the logistic regression model. Two are predictors which are more informative than the basic simulation parameters. The third feature determines the "correctness" of the model, and will define the target variable for logistic regression.
+
+The length of the study is best framed as a function of the baseline hazard rate. Rather than counting observed periods, we define
+%
+\begin{equation}
+\label{eq:nu}
+    \nu = \frac{n_p}{\log_{1-\lambda}\frac{1}{2}}  
+\end{equation}
+%
+as the number of periods an individual with hazard rate $\lambda$ is expected to survive. Note that $\log_{1-\lambda}\frac{1}{2}$ is the expected value of $NB(1, \lambda)$. 
+
+Next, rather than set $n_p$ and $n_c$ as model parameters, we define
+%
+\begin{equation}
+\label{eq:omega}
+    \omega = \frac{n_c}{n_p}    
+\end{equation}
+%
+as the fraction of enrollment periods that accept new cohorts.
+
+\subsubsection{Correctness}
+
+We intend to use Logistic regression to identify which dataset parameters have the greatest effect on statistical power; which dataset parameters maximize the chance of a correct result. Before continuing further, we define what constitutes a "correct" result. Classically, our null hypothesis is
+%
+\begin{equation}
+    H_0 : \alpha = 0 
+\end{equation}
+%
+Since we also defined the true $\alpha$ (i.e. $\beta$) to be always less than 0, we define another hypothesis
+%
+\begin{equation}
+    H_1 : \alpha < 0 
+\end{equation}
+%
+The estimated model is labeled "correct" if we reject hypotheses $H_0$ and $H_1$. That is,
+%
+\begin{equation}
+  \pi =
+  \begin{cases}
+    1, & \text{if } \neg H_0 \land \neg H_1 \\
+    0, & \text{otherwise}
+  \end{cases}
+\end{equation}
+%
+We use a Wald test \cite{wald} to determine whether a result rejects a hypothesis. That is, we reject $H_0$ if 
+%
+\begin{equation}
+ \frac{| \hat \alpha - 0 |}{se(\hat \alpha)} < z_{0.975}
+\end{equation}
+%
+In the same fashion, we reject $H_1$ if\footnotemark
+%
+\begin{equation}
+ \frac{ \hat \alpha - 0 }{se(\hat \alpha)} < -z_{0.975}
+\end{equation}
+%
+\footnotetext{It's worth observing that $\pi$ is equivalent to $\neg H_0 \land \alpha < 0$ in our special case.}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Predict Power with Logistic Regression
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Predict Power with Logistic Regression}
+
+Now, with the target variable identified, we can evaluate logit regression on the dataset. We propose two models for predicting the statistical power of the Cox proportional hazards model. 
+
+The first models linear effects
+%
+\begin{equation}
+    logit(\pi)  = \gamma_{0} + 
+        \gamma_{1} \lambda + 
+        \gamma_{2} \beta + 
+        \gamma_{3} \nu +
+        \gamma_{4} \omega +
+        \gamma_{5} s
+\end{equation}
+%
+The linear-effects model ought to confirm what we believe about the relationship between the simulation parameters and $\pi$. We'll pay particular attention to the sign of the effect. 
+
+The second model examines quadratic effects,
+%
+\begin{equation}
+\begin{aligned}
+    logit(\pi) = & \gamma'_{0} + \\ &
+        \gamma'_{11} \lambda + 
+        \gamma'_{12} \lambda^2 +  \\ &
+        \gamma'_{21} \beta +
+        \gamma'_{22} \beta^2 + \\ &
+        \gamma'_{31} \nu + 
+        \gamma'_{32} \nu^2 +  \\ &
+        \gamma'_{41} \omega +
+        \gamma'_{42} \omega^2 + \\ &
+        \gamma'_{51} s +
+        \gamma'_{52} s^2
+\end{aligned}
+\end{equation}
+%
+Building on the linear-effects model, the quadratic effects model will help us better understand the relationship between the simulation parameters and $\pi$. Specifically, we'll look for strong effect sizes and opposite signs on the $x$ and $x^2$ terms. Opposite signs will indicate an inflection point for some $x > 0$. 
+
+The cubic-effects model builds further on the quadratic-effects model,
+%
+\begin{equation}
+\begin{aligned}
+    logit(\pi) = &  \gamma^{(2)}_{0} + \\ &
+        \gamma^{(2)}_{11} \lambda + 
+        \gamma^{(2)}_{12} \lambda^2 + 
+        \gamma^{(2)}_{13} \lambda^3 + \\ &
+        \gamma^{(2)}_{21} \beta +
+        \gamma^{(2)}_{22} \beta^2 +
+        \gamma^{(2)}_{23} \beta^3 + \\ &
+        \gamma^{(2)}_{31} \nu + 
+        \gamma^{(2)}_{32} \nu^2 + 
+        \gamma^{(2)}_{33} \nu^3 + \\ &
+        \gamma^{(2)}_{41} \omega +
+        \gamma^{(2)}_{42} \omega^2 +
+        \gamma^{(2)}_{43} \omega^3 + \\ &
+        \gamma^{(2)}_{51} s +
+        \gamma^{(2)}_{52} s^2 +
+        \gamma^{(2)}_{53} s^3
+\end{aligned}
+\end{equation}
+%
+The role of the cubic-effects model is primarily to satiate our curiosity, and may only add to our inference. 
+
+The fourth and final model examines diminishing effects,
+%
+\begin{equation}
+    logit(\pi)  = \gamma^{(3)}_{0} + 
+        \gamma^{(3)}_{1} \exp[\lambda] + 
+        \gamma^{(3)}_{2} \exp[\beta] + 
+        \gamma^{(3)}_{3} \ln(\nu) +
+        \gamma^{(3)}_{4} \ln(\omega) +
+        \gamma^{(3)}_{5} \ln(s)
+\end{equation}
+%
+Note that the diminishing effects model calculates $exp[\lambda]$ and $\exp[\beta]$. We expect a diminishing, inverse relationship. That is, we anticipate a diminishing effect as $\lambda$ and $\beta$ get smaller. 
+
+We use the resulting fitted models to predict the statistical power of a Cox proportional hazards model applied to the dataset. To further evaluate the appropriateness of each model, we compare the Akaike information criterion (AIC) \cite{hyndman, sakamoto} for each model. 

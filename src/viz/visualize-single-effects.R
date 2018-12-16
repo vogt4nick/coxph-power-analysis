@@ -27,7 +27,7 @@ between_vec <- Vectorize(dplyr::between)
 #   )
 
 plotdat <- expand.grid(
-  baselineHazardRate=seq(0.0001, 0.05, 0.0001),
+  baselineHazardRate=seq(0.0001, 0.5, 0.0001),
   treatmentHazardRatio=0.5,
   expectedLifetimes=0.5,
   pctOpenEnrollmentPeriods=0.5,
@@ -63,8 +63,8 @@ gg <- ggplot(plotdat) +
   scale_color_discrete(name="Model") +
   scale_x_continuous(
     labels = scales::percent,
-    breaks = seq(0, .1, .01),
-    minor_breaks = seq(0 , .1, .005)) +
+    breaks = seq(0, .5, .1),
+    minor_breaks = seq(0, .5, .05)) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, .2),

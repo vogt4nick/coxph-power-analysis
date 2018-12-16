@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.15}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{array}
+
+\renewcommand{\listfigurename}{Figures}
+\renewcommand{\listtablename}{Tables}
+
+\title{
+Simulated Power Analysis of the \\
+Cox Proportional Hazards Model}
+\author{Nicholas Vogt \\ {\small Advisor: Keshav Pokhrel, Ph.D.}}
+\date{December 2018}
+
+\begin{document}
+
+\maketitle
+
+\input{reports/abstract.tex}
+\input{reports/introduction.tex}
+\input{reports/methodology.tex}
+\input{reports/results.tex}
+\input{reports/discussion.tex}
+
+\newpage 
+
+% \medskip
+\bibliography{bibliography}
+\bibliographystyle{acm}
+% \bibliographystyle{ieeetr}
+
+\newpage
+\listoftables
+\listoffigures
+
+\newpage
+\input{reports/figures.tex}
+
+
+\end{document}
