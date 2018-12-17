@@ -327,3 +327,60 @@ ggsave(
   scale = 0.4
 )
 
+
+
+# mixed open enrollment ---------------------------------------------------
+
+plotdat <- expand.grid(
+  baselineHazardRate=0.01,
+  treatmentHazardRatio=0.5,
+  expectedLifetimes=c(0.5, 1, 2),
+  pctOpenEnrollmentPeriods=seq(0.001, 1, 0.001),
+  cohortSize=32
+) %>% 
+  calculate_model_params() %>% 
+  mutate( # we're breaking camel-case convention b/c they'll be labels later
+    Linear = predict.glm(linear_effects, newdata=., type='response'),
+    Quadratic = predict.glm(quadratic_effects, newdata=., type='response'),
+    Cubic = predict.glm(cubic_effects, newdata=., type='response'),
+    Diminishing = predict.glm(diminishing_effects, newdata=., type='response'),
+    Mixed = predict.glm(mixed_effects, newdata=., type='response')
+  ) %>% 
+  select(pctOpenEnrollmentPeriods, expectedLifetimes, Linear, Quadratic, Cubic, Diminishing, Mixed) %>% 
+  gather(
+    key = 'model', value = 'modelPrediction', Linear, Quadratic, Cubic, Diminishing, Mixed
+  ) %>% 
+  mutate(
+    model = forcats::fct_relevel(model, c('Linear', 'Quadratic', 'Cubic', 'Diminishing', 'Mixed'))
+  ) %>% 
+  filter(model %in% c('Quadratic', 'Diminishing', 'Mixed'))
+
+
+ggplot(plotdat) +
+  geom_line(aes(pctOpenEnrollmentPeriods, y = modelPrediction, group=expectedLifetimes, color=expectedLifetimes), size=1) +
+  facet_wrap(~model) + 
+  theme_minimal() + 
+  theme(
+    legend.position="top",
+    legend.background = element_rect(
+      size=0.5,
+      linetype="solid",
+      colour ="black"
+    )
+  ) +
+  # scale_color_discrete(name="Model") +
+  scale_x_continuous(
+    labels = scales::percent,
+    breaks = seq(0, 1, 0.2),
+    minor_breaks = seq(0, 1, 0.1)) +
+  scale_y_continuous(
+    labels = scales::percent,
+    breaks = seq(0, 1, .2),
+    minor_breaks = seq(0 , 1, .1),
+    limits = c(0, 1)) +
+  labs(
+    x = '% Open Enrollment Periods',
+    y = 'Predicted Power',
+    title = 'Effect of New Cohorts on Predicted Power',
+    caption = "Evaluated at Baseline Hazard = 0.01; Treatment HR = 0.5; Expected Lifetimes = 0.5; Cohort Size = 16"
+  )

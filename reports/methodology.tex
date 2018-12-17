@@ -26,7 +26,7 @@ The dataset simulations was programmed with R in RStudio \cite{R, rstudio}. The 
 
 The resulting dataset contains $n_c \times s$ observations on simulated individuals. The binomial treatment variable is evenly distributed across individuals such that $\frac{s}{2}$ are labeled "treated" and the remaining are labeled "untreated".
 
-We must classify when an individual died or if they are right-censored. Individual time of death is sampled from\footnotemark 
+We must classify whether an individual died or if they are right-censored. Individual time of death is sampled from the negative binomial distribution\footnotemark 
 
 %\cite{agresti:categorical}
 
@@ -48,7 +48,7 @@ $$
 %
 The observation is right-censored where equation (\ref{eq:nbinom}) is greater than the max periods observed on that individual.
 
-By example, the parameters $\lambda=0.5, \beta=0.2, n_p=4, n_c=4, s=2$ may yield the dataset
+By example, the parameters $\lambda=0.5, ~\exp[\beta]=0.2, ~n_p=4, ~n_c=2, ~s=2$ may yield the dataset
 
 
 \pgfplotsset{compat=newest}
@@ -56,12 +56,8 @@ By example, the parameters $\lambda=0.5, \beta=0.2, n_p=4, n_c=4, s=2$ may yield
  PeriodAdmitted IsTreated HazardRate IsDeceased LastObserved
               1         0        0.5          1            1
               1         1        0.1          0            4
-              2         0        0.5          1            3
-              2         1        0.1          1            4
-              3         0        0.5          1            3
-              3         1        0.1          0            4
-              4         0        0.5          1            4
-              4         1        0.1          0            4
+              2         0        0.5          1            2
+              2         1        0.1          1            3
 }\mytable
 \pgfplotstabletypeset[fixed, %number format
 %zerofill, %remove if you don't want integers having .0 suffix
@@ -72,23 +68,25 @@ dec sep align %align at the decimal point
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Choosing simulation parameters
 \subsubsection{Choosing simulation parameters}
-
-A common problem - and one we'll cross later - is how to determine which model to use. We find a rare reversal: How do we choose which datasets to use? More specifically, how do we choose which parameters to model? There are three primary concerns here.
+\label{sec:sim-params}
+A common problem encountered by researchers is how to determine which model to use. We find a rare reversal: How do we choose which datasets to use? More specifically, how do we choose which parameters to model? There are three concerns.
 
 The first concern is to choose simulation parameters which will generate datasets with values such that the Cox proportional hazards model converges. The results are invalid otherwise. 
 
-The second concern is to choose simulation parameters which are reasonably well distributed in the logit space. Powers of 2 are a good candidate for this. Let $S = \lbrace 4, 8, ..., 32 \rbrace$ and set the simulation parameters for all combinations of
-
+The second concern is to choose simulation parameters which are reasonably uniformly distributed in the logit space. The inverse logit function and powers of 2 are good candidates for this. We set the simulation parameters as follows 
+%
 \begin{itemize}
     \item $\lambda \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -6, -5, -4, -3, -2, -1, 0 \rbrace \rbrace$,
     \item $\beta \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -3, -2, -1, 0, 1, 2 \rbrace \rbrace$,
     \item $n_p \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
     \item $n_c \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
     \item $s \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5 \rbrace \rbrace$,
-    \item $\xi \in \lbrace 1, 2, ..., 20 \rbrace$
+    \item $\xi \in \lbrace 1, 2, 3, ..., 19, 20 \rbrace$
 \end{itemize}
+%
+and create datasets for every combination of parameters.
 
-The third and final concern is to choose simulation parameters that will create datasets whose observed power is not only 0 or 1. We view this as a sampling problem. We calculate the observed power $\hat \rho$ and sample five observations at each level in $(\frac{1}{20}, \frac{1}{20}, \frac{2}{20}, ..., \frac{20}{20})$. This methodology keeps balances the distribution of the target variable at the cost of reducing the size of the final dataset.
+The third and final concern is how to choose simulation parameters that will create datasets whose observed power is not only 0 or 1. We view this as a sampling problem. We calculate the observed power, $\hat \rho$, and sample five observations at each level in $(\frac{0}{20}, \frac{1}{20}, \frac{2}{20}, ..., \frac{20}{20})$. This methodology uniformly balances the distribution of the target variable at the cost of reducing the size of the final dataset.
 
 \subsubsection{Cox Proportional Hazards Model}
 
@@ -152,15 +150,15 @@ The estimated model is labeled "correct" if we reject hypotheses $H_0$ and $H_1$
 %
 We use a Wald test \cite{wald} to determine whether a result rejects a hypothesis. That is, we reject $H_0$ if 
 %
-\begin{equation}
- \frac{| \hat \alpha - 0 |}{se(\hat \alpha)} < z_{0.975}
-\end{equation}
+$$
+ \frac{| \hat \alpha - 0 |}{\text{se}(\hat \alpha)} < z_{0.975}
+$$
 %
-In the same fashion, we reject $H_1$ if\footnotemark
+In the same fashion, we reject\footnotemark $~H_1$ if
 %
-\begin{equation}
- \frac{ \hat \alpha - 0 }{se(\hat \alpha)} < -z_{0.975}
-\end{equation}
+$$
+ \frac{ \hat \alpha - 0 }{\text{se}(\hat \alpha)} < -z_{0.975}
+$$
 %
 \footnotetext{It's worth observing that $\pi$ is equivalent to $\neg H_0 \land \alpha < 0$ in our special case.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,7 +171,7 @@ Now, with the target variable identified, we can evaluate logit regression on th
 The first models linear effects
 %
 \begin{equation}
-    logit(\pi)  = \gamma_{0} + 
+    \text{logit}(\pi)  = \gamma_{0} + 
         \gamma_{1} \lambda + 
         \gamma_{2} \beta + 
         \gamma_{3} \nu +
@@ -187,7 +185,7 @@ The second model examines quadratic effects,
 %
 \begin{equation}
 \begin{aligned}
-    logit(\pi) = & \gamma'_{0} + \\ &
+    \text{logit}(\pi) = & \gamma'_{0} + \\ &
         \gamma'_{11} \lambda + 
         \gamma'_{12} \lambda^2 +  \\ &
         \gamma'_{21} \beta +
@@ -201,13 +199,13 @@ The second model examines quadratic effects,
 \end{aligned}
 \end{equation}
 %
-Building on the linear-effects model, the quadratic effects model will help us better understand the relationship between the simulation parameters and $\pi$. Specifically, we'll look for strong effect sizes and opposite signs on the $x$ and $x^2$ terms. Opposite signs will indicate an inflection point for some $x > 0$. 
+Building on the linear-effects model, the quadratic effects model will help us better understand the relationship between the simulation parameters and $\pi$. Specifically, we'll look for strong effect sizes and opposite signs on the $x$ and $x^2$ terms. Opposite signs will indicate an inflection point at some $x > 0$. 
 
 The cubic-effects model builds further on the quadratic-effects model,
 %
 \begin{equation}
 \begin{aligned}
-    logit(\pi) = &  \gamma^{(2)}_{0} + \\ &
+    \text{logit}(\pi) = &  \gamma^{(2)}_{0} + \\ &
         \gamma^{(2)}_{11} \lambda + 
         \gamma^{(2)}_{12} \lambda^2 + 
         \gamma^{(2)}_{13} \lambda^3 + \\ &
@@ -231,14 +229,14 @@ The role of the cubic-effects model is primarily to satiate our curiosity, and m
 The fourth and final model examines diminishing effects,
 %
 \begin{equation}
-    logit(\pi)  = \gamma^{(3)}_{0} + 
+    \text{logit}(\pi)  = \gamma^{(3)}_{0} + 
         \gamma^{(3)}_{1} \exp[\lambda] + 
-        \gamma^{(3)}_{2} \exp[\beta] + 
+        \gamma^{(3)}_{2} \exp[\exp[\beta]] + 
         \gamma^{(3)}_{3} \ln(\nu) +
         \gamma^{(3)}_{4} \ln(\omega) +
         \gamma^{(3)}_{5} \ln(s)
 \end{equation}
 %
-Note that the diminishing effects model calculates $exp[\lambda]$ and $\exp[\beta]$. We expect a diminishing, inverse relationship. That is, we anticipate a diminishing effect as $\lambda$ and $\beta$ get smaller. 
+Note that the diminishing effects model calculates $\exp[\lambda]$ and $\exp[\exp[\beta]]$. We expect a diminishing, inverse relationship. That is, we anticipate a diminishing effect as $\lambda$ and $\exp[\beta]$ get smaller. 
 
 We use the resulting fitted models to predict the statistical power of a Cox proportional hazards model applied to the dataset. To further evaluate the appropriateness of each model, we compare the Akaike information criterion (AIC) \cite{hyndman, sakamoto} for each model. 

@@ -1,78 +1,40 @@
 
-% Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Sun, Dec 16, 2018 - 10:46:46 AM
-\begin{table}[!htbp] \centering 
-  \caption{} 
-  \label{} 
-\begin{tabular}{@{\extracolsep{5pt}}lc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
- & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
-\cline{2-2} 
-\\[-1.8ex] & isCorrect \\ 
-\hline \\[-1.8ex] 
- exp(baselineHazardRate) & $-$3.688$^{***}$ \\ 
-  & (0.420) \\ 
-  & \\ 
- exp(treatmentHazardRatio) & $-$2.671$^{***}$ \\ 
-  & (0.149) \\ 
-  & \\ 
- logCohortSize & 0.949$^{***}$ \\ 
-  & (0.082) \\ 
-  & \\ 
- logExpectedLifetimes & 0.946$^{***}$ \\ 
-  & (0.063) \\ 
-  & \\ 
- logPctOpenEnrollmentPeriods & 0.592$^{***}$ \\ 
-  & (0.064) \\ 
-  & \\ 
- Constant & 6.571$^{***}$ \\ 
-  & (0.548) \\ 
-  & \\ 
-\hline \\[-1.8ex] 
-Observations & 2,098 \\ 
-Log Likelihood & $-$1,179.778 \\ 
-Akaike Inf. Crit. & 2,371.555 \\ 
-\hline 
-\hline \\[-1.8ex] 
-\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
-\end{tabular} 
-\end{table}  
 
 % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
 % Date and time: Sun, Dec 16, 2018 - 5:03:43 PM
 \begin{table}[!htbp] \centering 
-  \caption{} 
-  \label{} 
+  \caption[Diminishing-Effects Model]{Diminishing-Effects Model of Statistical Power} 
+  \label{tbl:dim} 
 \begin{tabular}{@{\extracolsep{5pt}}lc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
  & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
 \cline{2-2} 
-\\[-1.8ex] & isCorrect \\ 
+\\[-1.8ex] & $\pi$ \\ 
+\\[-1.8ex] & (Diminishing Effects) \\ 
 \hline \\[-1.8ex] 
- exp(baselineHazardRate) & $-$2.391$^{***}$ \\ 
+ $\exp(\lambda)$ & $-$2.391$^{***}$ \\ 
   & (0.356) \\ 
   & \\ 
- exp(treatmentHazardRatio) & $-$2.550$^{***}$ \\ 
+ $\exp(\exp(\beta))$ & $-$2.550$^{***}$ \\ 
   & (0.141) \\ 
   & \\ 
- logCohortSize & 0.748$^{***}$ \\ 
+ $\ln(s)$ & 0.748$^{***}$ \\ 
   & (0.084) \\ 
   & \\ 
- logExpectedLifetimes & 0.806$^{***}$ \\ 
+ $\ln(\nu)$ & 0.806$^{***}$ \\ 
   & (0.064) \\ 
   & \\ 
- logPctOpenEnrollmentPeriods & 0.432$^{***}$ \\ 
+ $\ln(\omega)$ & 0.432$^{***}$ \\ 
   & (0.066) \\ 
   & \\ 
- Constant & 5.228$^{***}$ \\ 
+ $\gamma_0$ & 5.228$^{***}$ \\ 
   & (0.484) \\ 
   & \\ 
 \hline \\[-1.8ex] 
 Observations & 2,098 \\ 
-Log Likelihood & $-$1,209.214 \\ 
-Akaike Inf. Crit. & 2,430.428 \\ 
+Log Likelihood & $-$1,209 \\ 
+Akaike Inf. Crit. & 2,430 \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 

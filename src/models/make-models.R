@@ -6,6 +6,7 @@ load('data/processed/logit_dat.Rdata')
 
 # linear_effects ----------------------------------------------------------
 
+set.seed(1)
 linear_effects <- 
   glm(
     formula = isCorrect ~ 
@@ -17,7 +18,6 @@ linear_effects <-
 
 
 # quadratic effects -------------------------------------------------------
-
 quadratic_effects <- 
   glm(
     formula = isCorrect ~ 
@@ -35,7 +35,8 @@ quadratic_effects <-
 cubic_effects <- 
   glm(
     formula = isCorrect ~ 
-      baselineHazardRate + baselineHazardRate2 + baselineHazardRate3 +
+      poly(baselineHazardRate, 3) +
+      # baselineHazardRate + baselineHazardRate2 + baselineHazardRate3 +
       treatmentHazardRatio + treatmentHazardRatio2 + treatmentHazardRatio3 +
       cohortSize + cohortSize2 + cohortSize3 +
       expectedLifetimes + expectedLifetimes2 + expectedLifetimes3 +
@@ -58,20 +59,23 @@ diminishing_effects <-
     family = binomial(link = "logit"))
 
 
-save(linear_effects, quadratic_effects, cubic_effects, diminishing_effects, file = 'models/explore-effects.Rdata')
-
-
 # mixed effects -----------------------------------------------------------
 
 mixed_effects <- glm(
   formula = isCorrect ~ 
     logBaselineHazardRate +
-    logTreatmentHazardRatio + 
-    cohortSize +
-    logExpectedLifetimes + 
-    pctOpenEnrollmentPeriods + pctOpenEnrollmentPeriods2, 
+    logTreatmentHazardRatio +
+    logCohortSize +
+    logExpectedLifetimes +
+    pctOpenEnrollmentPeriods +
+    logBaselineHazardRate * pctOpenEnrollmentPeriods + 
+    logBaselineHazardRate * pctOpenEnrollmentPeriods2, 
   data = logit_dat, 
   family = binomial(link = "logit"))
+
+
+save(linear_effects, quadratic_effects, cubic_effects, diminishing_effects, mixed_effects, file = 'models/explore-effects.Rdata')
+
 
 AIC(linear_effects)
 AIC(quadratic_effects)
