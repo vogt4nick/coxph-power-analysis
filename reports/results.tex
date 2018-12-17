@@ -1,0 +1,60 @@
+% https://www.overleaf.com/learn/latex/Inserting_Images
+\section{Results}
+
+We analyze the results to understand which dataset features most affect the power of a Cox proportional hazards model. We evaluate the value of the simulated datasets under our specifications, and build a model to estimate the power of the Cox proportional hazards model under our specifications. 
+
+\subsection{Quality of Simulated Data}
+
+We acknowledged three problems in choosing appropriate dataset parameters:
+
+\begin{enumerate}
+    \item How to choose dataset parameters which will generate datasets with values such that the Cox proportional hazards model converges?
+    \item How to choose dataset parameters which are uniformly distributed in the logit space? 
+    \item How to choose dataset parameters to simulate datasets whose observed power, $\hat \rho$, is uniformly distributed between 0 and 1?
+\end{enumerate}
+
+
+
+We verify that chose appropriate dataset parameters by observing the distribution of observed power (Figure \ref{fig:hist}). The mode power is 0, however the values between 0 and 1 are reasonably uniform. Our decision to resample 5 observations from each level holds. 
+
+\subsection{Logistic Models}
+
+In this section we interpret the predicted effects of four models. We briefly review the model results before discussing the effects of dataset parameters separately. The estimates for each model are summarized in tables \ref{tbl:lin-quad-cubic} and \ref{tbl:dim}  \cite{stargazer}. 
+
+We begin with the linear-effects model which notably finds a startling, positive estimate on the effect of $\gamma$ on $\pi$. That said, the result is not reflected in any of the other models. Often, a result such as this can be attributed to multicollinearity, or a local, non-linear trend dominating the fit of the model, however, we took certain precautions to avoid such behavior in our model (Section \ref{sec:sim-params}).  An explanation evades us at the time of writing. The remaining coefficients on the linear-effects model confirm our prior hypotheses and are otherwise unremarkable.
+
+The quadratic-effects model uncovered more powerful effects on each simulation parameter except $\lambda$. Furthermore, the signs on all estimates take the form $-x^2 + x$, indicating an inversion point at some $x > 0$. These estimates may come to support the diminishing effects model. Finally, the AIC of the quadratic effects model is smaller than the linear-effects model, indicating a more appropriate model (2,445 and 2,651 respectively).
+
+The cubic-effects model adds little evidence the quadratic-effects model does not already present. Nonetheless, the AIC indicates a subtle improvement upon the quadratic-effects model (2,394 and 2,445 respectively). We will further investigate the individual effects in the next section. 
+
+Finally, we examine the diminishing-effects model. Every estimate has the expected sign, indicates a strong effect size, and each is significant at the $\text{p} < 0.01$ level. The AIC is similar to that of the quadratic-effects model (2,430 and 2,445 respectively). We prefer the diminishing-effects model for its interpretive power, as it removes much of the complexity of the quadratic- and cubic-effects models.
+
+\subsubsection{Baseline Hazard Rate $(\lambda)$}
+
+Intuitively, there is a strictly inverse relationship between $\lambda$ and $\pi$; a study is more likely to find evidence for a true effect if the observation window is small. In accordance with this belief, all but the linear-effects model agrees with this assertion; a smaller $\lambda$ increases power (Figure \ref{fig:power-baseline-hazard}).  The effect is not as pronounced as we suspected. For example, reducing the observation window by a factor of two, and therefore reducing $\lambda$ by half, adds little power to the study.
+
+\subsubsection{Treatment Hazard Ratio $(\exp[\beta])$}
+
+A larger $\exp[\beta]$ implies a smaller treatment effect\footnotemark, and smaller treatment effect is be harder to identify. The linear- and diminishing-effects model behave as anticipated (Figure \ref{fig:power-treatment-hr}). The diminishing-effects model estimates a sigmoid-like behavior with a larger marginal effect for values $\exp[\beta] \in [0.4, 0.6]$. 
+
+\footnotetext{Recall we defined values for $\beta$ such that $\exp[\beta] < 1$.}
+
+The quadratic- and cubic-effects models appear to have overfit the trend identified by the diminishing-effects model; the marginal effect inverts from negative to positive. We prefer this explanation, however, we posit another unverified explanation: if the treatment all but guarantees immunity, then the treated individuals in our simulation would all be right-censored. This prompts a follow up question: Is the Cox proportional hazards model robust to unbalanced censored data? 
+
+\subsubsection{Cohort Size $(s)$}
+
+Figure \ref{fig:power-cohort-size} shows the estimated relationship of cohort size on power for each model. 
+
+The anticipated, positive relationship of $s$ on $pi$ is substantiated by all four models (Figure \ref{fig:power-cohort-size}). Of all the simulation parameters, this one seems best explained by the log-effects model. The marginal effect of the fifth patient is intuitively larger than the marginal effect of the 25\textsuperscript{th} patient. Both the quadratic- and cubic-effects models show a second-order inversion which agrees with the diminishing effect assumption. 
+
+\subsubsection{Expected Lifetimes $(\nu)$}
+
+Expected lifetimes $(\nu)$ proxies study-length. Power rapidly increases where $\nu < 1$ and slowly tapers off after $\nu = 2$. The effect is so pronounced that it seems reasonable to advise small studies observe at least one expected lifetime before applying the Cox proportional hazards model, when possible. However, this effect is readily offset by the introduction of large cohorts (Figure \ref{fig:power-expected-lifetimes-cohort-size}). Every model supports the notion that short studies of several patients are more powerful than longer studies with few patients. 
+
+\subsubsection{Share of Open Enrollment Periods $(\omega)$}
+
+Finally, we arrive at the core question we set out to answer. How do we filter our dataset to maximize power? The quadratic- and diminishing-effects models disagree where $\omega > 0.8$ (Figure \ref{fig:power-pct-open-enrollment}). The former suggests including the last 20\% of cohorts cause the study to lose power power, whereas the latter suggests the same add power to the study. With these results, we believe the answer is unimportant; the effect of the final 20\% of cohorts is very small in either case\footnotemark.
+
+\footnotetext{It's likely there is an interaction effect between $\nu$ and $\omega$. Naturally, a longer study should be able to include more cohorts.}
+
+
