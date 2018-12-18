@@ -368,7 +368,10 @@ ggplot(plotdat) +
       colour ="black"
     )
   ) +
-  # scale_color_discrete(name="Model") +
+  scale_color_continuous(
+    name="Expected Lifetimes",
+    breaks = c(0.5, 1, 2)
+  ) +
   scale_x_continuous(
     labels = scales::percent,
     breaks = seq(0, 1, 0.2),

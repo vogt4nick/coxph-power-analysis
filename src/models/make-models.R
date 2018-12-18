@@ -68,8 +68,8 @@ mixed_effects <- glm(
     logCohortSize +
     logExpectedLifetimes +
     pctOpenEnrollmentPeriods +
-    logBaselineHazardRate * pctOpenEnrollmentPeriods + 
-    logBaselineHazardRate * pctOpenEnrollmentPeriods2, 
+    logExpectedLifetimes * pctOpenEnrollmentPeriods + 
+    logExpectedLifetimes * pctOpenEnrollmentPeriods2, 
   data = logit_dat, 
   family = binomial(link = "logit"))
 
