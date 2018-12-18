@@ -46,18 +46,18 @@ $$
   \end{cases}
 $$
 %
-The observation is right-censored where equation (\ref{eq:nbinom}) is greater than the max periods observed on that individual.
+The observation is right-censored where equation (\ref{eq:nbinom}) is greater than the max periods observed on that individual. 
 
-By example, the parameters $\lambda=0.5, ~\exp[\beta]=0.2, ~n_p=4, ~n_c=2, ~s=2$ may yield the dataset
+By example, the parameters $\lambda=0.5, ~\exp[\beta]=0.2, ~n_p=4, ~n_c=2, ~s=2, ~\xi=42$ return the dataset
 
 
 \pgfplotsset{compat=newest}
 \pgfplotstableread{
  PeriodAdmitted IsTreated HazardRate IsDeceased LastObserved
-              1         0        0.5          1            1
-              1         1        0.1          0            4
+              1         1        0.1          1            1
+              1         0        0.5          1            2
+              2         1        0.1          0            4
               2         0        0.5          1            2
-              2         1        0.1          1            3
 }\mytable
 \pgfplotstabletypeset[fixed, %number format
 %zerofill, %remove if you don't want integers having .0 suffix
@@ -76,8 +76,8 @@ The first concern is to choose simulation parameters which will generate dataset
 The second concern is to choose simulation parameters which are reasonably uniformly distributed in the logit space. The inverse logit function and powers of 2 are good candidates for this. We set the simulation parameters as follows 
 %
 \begin{itemize}
-    \item $\lambda \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -6, -5, -4, -3, -2, -1, 0 \rbrace \rbrace$,
-    \item $\beta \in \lbrace logit^{-1}(i) ~|~ \forall i \in \lbrace -3, -2, -1, 0, 1, 2 \rbrace \rbrace$,
+    \item $\lambda \in \lbrace \text{logit}^{-1}(i) ~|~ \forall i \in \lbrace -6, -5, -4, -3, -2, -1, 0 \rbrace \rbrace$,
+    \item $\exp[\beta] \in \lbrace \text{logit}^{-1}(i) ~|~ \forall i \in \lbrace -3, -2, -1, 0, 1, 2 \rbrace \rbrace$,
     \item $n_p \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
     \item $n_c \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5, 6 \rbrace \rbrace$, 
     \item $s \in \lbrace 2^i ~|~ \forall i \in \lbrace 2, 3, 4, 5 \rbrace \rbrace$,
@@ -92,10 +92,10 @@ The third and final concern is how to choose simulation parameters that will cre
 
 The Cox proportional hazards model is specified as 
 %
-\begin{equation}
+$$
 \label{eq:cox}
     h(t) = \theta \exp \left[ \alpha x \right] + \varepsilon
-\end{equation}
+$$
 %
 The key to Cox's formulation, and hence the model's namesake, is the decision to model the hazard rate, $h(t)$, as the proportional effect of a treatment variable, $\alpha$, on the baseline hazard rate, $\theta$. The regression estimates $\theta$ and $\alpha$ correspond to the simulation parameters $\lambda$ and $\beta$ respectively. We later compare the estimates to the simulation parameters to determine the efficacy of the fitted model.
 
@@ -126,7 +126,9 @@ as the fraction of enrollment periods that accept new cohorts.
 
 \subsubsection{Correctness}
 
-We intend to use logistic regression to identify which dataset parameters have the greatest effect on statistical power; which dataset parameters maximize the chance of a correct result. Before continuing further, we define what constitutes a "correct" result. Classically, our null hypothesis is
+We intend to use logistic regression to identify which dataset parameters have the greatest effect on statistical power; i.e. which dataset parameters maximize the chance of a correct result. Before continuing further, we define what constitutes a "correct" result. 
+
+Classically, our null hypothesis is
 %
 \begin{equation}
     H_0 : \alpha = 0 
@@ -148,7 +150,7 @@ The estimated model is labeled "correct" if we reject hypotheses $H_0$ and $H_1$
   \end{cases}
 \end{equation}
 %
-We use a Wald test \cite{wald} to determine whether a result rejects a hypothesis. That is, we reject $H_0$ if 
+We use a Wald test \cite{wald} to determine whether a result rejects a hypothesis. We reject $H_0$ if 
 %
 $$
  \frac{| \hat \alpha - 0 |}{\text{se}(\hat \alpha)} < z_{0.975}
@@ -173,33 +175,38 @@ The first models linear effects
 \begin{equation}
     \text{logit}(\pi)  = \gamma_{0} + 
         \gamma_{1} \lambda + 
-        \gamma_{2} \beta + 
-        \gamma_{3} \nu +
-        \gamma_{4} \omega +
-        \gamma_{5} s
+        \gamma_{2} \exp[\beta] + 
+        \gamma_{3} s + 
+        \gamma_{4} \nu +
+        \gamma_{5} \omega
 \end{equation}
 %
 The linear-effects model ought to confirm what we believe about the relationship between the simulation parameters and $\pi$. We'll pay particular attention to the sign of the effect. 
 
-The second model examines quadratic effects,
+The second model examines quadratic effects\footnotemark,
 %
 \begin{equation}
 \begin{aligned}
     \text{logit}(\pi) = & \gamma'_{0} + \\ &
         \gamma'_{11} \lambda + 
         \gamma'_{12} \lambda^2 +  \\ &
-        \gamma'_{21} \beta +
-        \gamma'_{22} \beta^2 + \\ &
-        \gamma'_{31} \nu + 
-        \gamma'_{32} \nu^2 +  \\ &
-        \gamma'_{41} \omega +
-        \gamma'_{42} \omega^2 + \\ &
-        \gamma'_{51} s +
-        \gamma'_{52} s^2
+        \gamma'_{21} \exp[\beta] +
+        \gamma'_{22} \exp[\beta]^2 + \\ &
+        \gamma'_{31} s +
+        \gamma'_{32} s^2 + \\ &
+        \gamma'_{41} \nu + 
+        \gamma'_{42} \nu^2 +  \\ &
+        \gamma'_{51} \omega +
+        \gamma'_{52} \omega^2
+        
 \end{aligned}
 \end{equation}
 %
 Building on the linear-effects model, the quadratic effects model will help us better understand the relationship between the simulation parameters and $\pi$. Specifically, we'll look for strong effect sizes and opposite signs on the $x$ and $x^2$ terms. Opposite signs will indicate an inflection point at some $x > 0$. 
+
+\footnotetext{
+Note that we model $\exp[\beta]$ rather than $\beta$. There are many reasons for this design decision, chief among them is that we find $\exp[\beta]$ easier to interpret. A secondary concern is that its more difficult to model quadratic- and cubic- effects on the domain $\beta < 0$ than on the domain $\exp[\beta] \in (0, 1)$.
+}
 
 The cubic-effects model builds further on the quadratic-effects model,
 %
@@ -209,18 +216,18 @@ The cubic-effects model builds further on the quadratic-effects model,
         \gamma^{(2)}_{11} \lambda + 
         \gamma^{(2)}_{12} \lambda^2 + 
         \gamma^{(2)}_{13} \lambda^3 + \\ &
-        \gamma^{(2)}_{21} \beta +
-        \gamma^{(2)}_{22} \beta^2 +
-        \gamma^{(2)}_{23} \beta^3 + \\ &
-        \gamma^{(2)}_{31} \nu + 
-        \gamma^{(2)}_{32} \nu^2 + 
-        \gamma^{(2)}_{33} \nu^3 + \\ &
-        \gamma^{(2)}_{41} \omega +
-        \gamma^{(2)}_{42} \omega^2 +
-        \gamma^{(2)}_{43} \omega^3 + \\ &
-        \gamma^{(2)}_{51} s +
-        \gamma^{(2)}_{52} s^2 +
-        \gamma^{(2)}_{53} s^3
+        \gamma^{(2)}_{21} \exp[\beta] +
+        \gamma^{(2)}_{22} \exp[\beta]^2 +
+        \gamma^{(2)}_{23} \exp[\beta]^3 + \\ &
+        \gamma^{(2)}_{31} s +
+        \gamma^{(2)}_{32} s^2 +
+        \gamma^{(2)}_{33} s^3 \\ &
+        \gamma^{(2)}_{41} \nu + 
+        \gamma^{(2)}_{42} \nu^2 + 
+        \gamma^{(2)}_{43} \nu^3 + \\ &
+        \gamma^{(2)}_{51} \omega +
+        \gamma^{(2)}_{52} \omega^2 +
+        \gamma^{(2)}_{53} \omega^3
 \end{aligned}
 \end{equation}
 %
@@ -229,12 +236,15 @@ The role of the cubic-effects model is primarily to satiate our curiosity, and m
 The fourth and final model examines diminishing effects,
 %
 \begin{equation}
-    \text{logit}(\pi)  = \gamma^{(3)}_{0} + 
+\begin{aligned}
+    \text{logit}(\pi) = & \gamma^{(3)}_{0} + \\ & 
         \gamma^{(3)}_{1} \exp[\lambda] + 
-        \gamma^{(3)}_{2} \exp[\exp[\beta]] + 
-        \gamma^{(3)}_{3} \ln(\nu) +
-        \gamma^{(3)}_{4} \ln(\omega) +
-        \gamma^{(3)}_{5} \ln(s)
+        \gamma^{(3)}_{2} \exp[\exp[\beta]] + \\ & 
+        \gamma^{(3)}_{3} \ln(s) + 
+        \gamma^{(3)}_{4} \ln(\nu) +
+        \gamma^{(3)}_{5} \ln(\omega)
+        
+\end{aligned}
 \end{equation}
 %
 Note that the diminishing effects model calculates $\exp[\lambda]$ and $\exp[\exp[\beta]]$. We expect a diminishing, inverse relationship. That is, we anticipate a diminishing effect as $\lambda$ and $\exp[\beta]$ get smaller. 
